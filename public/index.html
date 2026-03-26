@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Морской бой</title>
+    <style>
+        * {
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #eee;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .info {
+            background: #4a6fa5;
+            padding: 10px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 18px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 0.8; }
+            50% { opacity: 1; }
+            100% { opacity: 0.8; }
+        }
+        
+        .controls {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+        }
+        
+        button {
+            background: #4a6fa5;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        
+        button:active:not(:disabled) {
+            transform: translateY(0);
+        }
+        
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .board {
+            display: inline-block;
+            background: #0f1724;
+            padding: 10px;
+            border-radius: 10px;
+            margin: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        
+        .board-container {
+            text-align: center;
+            overflow-x: auto;
+        }
+        
+        .board-header {
+            display: flex;
+            margin-bottom: 5px;
+        }
+        
+        .board-row {
+            display: flex;
+        }
+        
+        .corner-cell {
+            width: 40px;
+            height: 40px;
+        }
+        
+        .col-label, .row-label {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #88a0c0;
+            font-size: 14px;
+        }
+        
+        .cell {
+            width: 40px;
+            height: 40px;
+            border: 1px solid #2a3a5a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 20px;
+            background: #1a2a3a;
+        }
+        
+        .cell:hover {
+            background: #2a3a5a;
+            transform: scale(1.05);
+            z-index: 10;
+            position: relative;
+        }
+        
+        .cell.ship {
+            background: #4a6fa5;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.5);
+        }
+        
+        .cell.hit {
+            background: #e94560;
+            animation: hitAnim 0.3s ease-out;
+        }
+        
+        .cell.miss {
+            background: #2c3e50;
+            opacity: 0.7;
+        }
+        
+        .cell.selected {
+            background: #00adb5;
+            box-shadow: 0 0 10px #00adb5;
+            animation: pulse 0.5s infinite;
+        }
+        
+        @keyframes hitAnim {
+            0% { transform: scale(1); background: #ff6b6b; }
+            50% { transform: scale(1.2); background: #ff0000; }
+            100% { transform: scale(1); background: #e94560; }
+        }
+        
+        h3 {
+            text-align: center;
+            margin: 20px 0 10px;
+            color: #88a0c0;
+        }
+        
+        @media (max-width: 768px) {
+            .cell, .col-label, .row-label, .corner-cell {
+                width: 35px;
+                height: 35px;
+                font-size: 18px;
+            }
+            
+            .col-label, .row-label {
+                font-size: 12px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .cell, .col-label, .row-label, .corner-cell {
+                width: 30px;
+                height: 30px;
+                font-size: 16px;
+            }
+            
+            .col-label, .row-label {
+                font-size: 10px;
+            }
+            
+            button {
+                padding: 8px 12px;
+                font-size: 12px;
+            }
+        }
+        
+        .status {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.7);
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            font-family: monospace;
+            z-index: 1000;
+        }
+        
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #1a1a2e;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #4a6fa5;
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00adb5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="app"></div>
+    </div>
+    <div class="status" id="status">🟢 Подключение...</div>
+    
+    <script src="client.js"></script>
+</body>
+</html>
