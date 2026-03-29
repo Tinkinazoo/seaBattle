@@ -199,15 +199,33 @@ wss.on('connection', (ws, req) => {
                 
                 if (hit) {
                     opponent.field[msg.x][msg.y] = 0;
-                    
+
+                    // check if ship destroyed
+                    let bShipDestroyed = false;
+                    const rigth = (msg.x == 9) ? msg.x : msg.x+1;
+                    const left = (msg.x == 0) ? msg.x : msg.x-1;
+                    const top = (msg.y == 0) ? msg.y : msg.y-1;
+                    const bottom = (msg.y == 9) ? msg.y : msg.y+1;
+
+                    if (opponent.field[rigth][msg.y] === 0 
+                        && opponent.field[msg.x][bottom] === 0 
+                        && opponent.field[rigth][bottom] === 0
+                        && opponent.field[left][msg.y] === 0 
+                        && opponent.field[msg.x][top] === 0 
+                        && opponent.field[left][top] === 0
+                        && opponent.field[left][bottom] === 0 
+                        && opponent.field[rigth][top] === 0) {
+                            bShipDestroyed = true;
+                    } 
+
                     player.ws.send(JSON.stringify({
                         type: 'shotResult',
                         hit: true,
                         x: msg.x,
                         y: msg.y,
                         nextTurn: true,
-                        message: 'Попадание! Стреляйте еще!'
-                    }));
+                        message: !bShipDestroyed ? 'Попадание! Стреляйте еще!' : 'Корабль противника потоплен!' 
+                    }));                    
                     
                     opponent.ws.send(JSON.stringify({
                         type: 'shot',
