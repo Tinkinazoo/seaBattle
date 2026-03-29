@@ -64,6 +64,24 @@ function canPlaceShip(x, y, size, orientation) {
         if (myField[cell.x][cell.y] === 1) {
             return false;
         }
+        // check neighbours        
+        const rigth = (cell.x == 9) ? cell.x : cell.x + 1;
+        const left = (cell.x == 0) ? cell.x : cell.x - 1;
+        const top = (cell.y == 0) ? cell.y : cell.y - 1;
+        const bottom = (cell.y == 9) ? cell.y : cell.y + 1;
+
+        
+        if (myField[rigth][cell.y] === 1 || myField[cell.x][top] === 1 
+            || myField[rigth][top] === 1) {
+                return false;
+        }
+        if (myField[left][cell.y] === 1 || myField[cell.x][top] === 1 
+            || myField[left][top] === 1) {
+                return false;
+        }
+        if (myField[left][bottom] === 1 || myField[rigth][top] === 1) {
+                return false;
+        }        
     }
     
     return true;
@@ -71,9 +89,6 @@ function canPlaceShip(x, y, size, orientation) {
 
 function renderBoard(field, isEnemy, title = '') {
     let html = `<div class="board" data-is-enemy="${isEnemy}">`;
-    if (title) {
-        html += `<div style="text-align: center; margin-bottom: 10px; font-weight: bold;">${title}</div>`;
-    }
     
     html += '<div class="board-header">';
     html += '<div class="corner-cell"></div>';
@@ -294,7 +309,7 @@ function placeShip() {
     for (const cell of cells) {
         myField[cell.x][cell.y] = 1;
     }
-    
+
     currentShip.placed++;
     debugLog(`Корабль размещен. Осталось разместить: ${ships.filter(s => s.placed < s.count).length}`);
     
@@ -351,16 +366,17 @@ function handleServerMessage(data) {
             
         case 'shot':
             debugLog(`Получен выстрел от соперника: hit=${data.hit}, x=${data.x}, y=${data.y}`);
-            debugLog(`До изменения myField[${data.x}][${data.y}] = ${myField[data.x][data.y]}`);
             
             if (data.hit) {
                 myField[data.x][data.y] = 2;
                 message = data.message || `💥 Попадание в ${COL_LETTERS[data.y]}${data.x + 1}!`;
+                confirm(message);
                 debugLog(`Попадание! Обновлено поле: myField[${data.x}][${data.y}] = ${myField[data.x][data.y]}`);
                 myTurn = false;
             } else {
                 myField[data.x][data.y] = 3;
                 message = data.message || `⚫ Промах по ${COL_LETTERS[data.y]}${data.x + 1}!`;
+                confirm(message);
                 debugLog(`Промах! Обновлено поле: myField[${data.x}][${data.y}] = ${myField[data.x][data.y]}`);
                 myTurn = true;
             }
@@ -369,18 +385,19 @@ function handleServerMessage(data) {
             
         case 'shotResult':
             debugLog(`Результат вашего выстрела: hit=${data.hit}, nextTurn=${data.nextTurn}`);
-            debugLog(`До изменения enemyField[${data.x}][${data.y}] = ${enemyField[data.x][data.y]}`);
             
             if (data.hit) {
                 enemyField[data.x][data.y] = 2;
                 debugLog(`Попадание! Обновлено поле противника: enemyField[${data.x}][${data.y}] = ${enemyField[data.x][data.y]}`);
                 myTurn = true;
                 message = data.message || '💥 Попадание! Стреляйте еще!';
+                confirm(message);
             } else {
                 enemyField[data.x][data.y] = 3;
                 debugLog(`Промах! Обновлено поле противника: enemyField[${data.x}][${data.y}] = ${enemyField[data.x][data.y]}`);
                 myTurn = false;
                 message = data.message || '⚫ Промах! Ход противника';
+                confirm(message);
             }
             
             debugLog(`После обработки: myTurn=${myTurn}`);
@@ -388,6 +405,11 @@ function handleServerMessage(data) {
             render();
             break;
             
+        case 'ship_destroyed':
+            message = data.message || 'Корабль противника потоплен!';
+            confirm(message);
+            break;
+
         case 'gameOver':
             debugLog('!!! ИГРА ОКОНЧЕНА !!!');
             gameStarted = false;
