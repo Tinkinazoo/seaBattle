@@ -12,11 +12,13 @@
         
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
             color: #eee;
             margin: 0;
             padding: 20px;
             min-height: 100vh;
+            background-image: url("whim.jpeg");
+            background-size: contain;
+            background-color: #cccccc;
         }
         
         .container {
@@ -76,7 +78,7 @@
         
         .board {
             display: inline-block;
-            background: #0f1724;
+            background: #fbf8fa;
             padding: 10px;
             border-radius: 10px;
             margin: 10px;
@@ -116,21 +118,14 @@
         .cell {
             width: 40px;
             height: 40px;
-            border: 1px solid #2a3a5a;
+            border: 1px solid #df73bf;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             transition: all 0.2s;
             font-size: 20px;
-            background: #1a2a3a;
-        }
-        
-        .cell:hover {
-            background: #2a3a5a;
-            transform: scale(1.05);
-            z-index: 10;
-            position: relative;
+            background: #fbf8fa;
         }
         
         .cell.ship {
@@ -168,30 +163,30 @@
         
         @media (max-width: 768px) {
             .cell, .col-label, .row-label, .corner-cell {
-                width: 35px;
-                height: 35px;
-                font-size: 18px;
-            }
-            
-            .col-label, .row-label {
-                font-size: 12px;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .cell, .col-label, .row-label, .corner-cell {
                 width: 30px;
                 height: 30px;
-                font-size: 16px;
+                font-size: 15px;
             }
             
             .col-label, .row-label {
                 font-size: 10px;
             }
+        }
+        
+        @media (max-width: 480px) {
+            .cell, .col-label, .row-label, .corner-cell {
+                width: 25px;
+                height: 25px;
+                font-size: 12px;
+            }
+            
+            .col-label, .row-label {
+                font-size: 8px;
+            }
             
             button {
-                padding: 8px 12px;
-                font-size: 12px;
+                padding: 4px 6px;
+                font-size: 8px;
             }
         }
         
@@ -199,7 +194,7 @@
             position: fixed;
             bottom: 10px;
             right: 10px;
-            background: rgba(0,0,0,0.7);
+            background: rgba(43, 42, 42, 0.7);
             padding: 5px 10px;
             border-radius: 5px;
             font-size: 12px;
